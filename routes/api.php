@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+    // route resource para departamentos
+    Route::resource('departamentos', 'DepartamentoController');
+    // route resource para usuarios
+    Route::resource('usuarios', 'usuarioController');
+    // route resource para tickets
+    Route::resource('tickets', 'TicketController');
