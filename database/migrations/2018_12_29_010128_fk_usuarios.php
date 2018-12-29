@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDepartamentosTable extends Migration
+class FkUsuarios extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CreateDepartamentosTable extends Migration
      */
     public function up()
     {
-        Schema::create('departamentos', function (Blueprint $table) {
-            $table->increments('id_departamento');
-            $table->string('departamento', 50);
-            $table->string('ubicacion', 50);
-            $table->timestamps();
+        Schema::table('usuarios', function (Blueprint $table) {
+            $table->foreign('departamento_id')->references('id_departamento')->on('departamentos')->onDelete('cascade');;
         });
     }
 
@@ -28,6 +25,7 @@ class CreateDepartamentosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('departamentos');
+        Schema::table('usuarios', function (Blueprint $table) {
+        });
     }
 }
