@@ -14,17 +14,7 @@ class DepartamentoController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return Departamento::with('usuarios')->get();
     }
 
     /**
@@ -35,7 +25,33 @@ class DepartamentoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $departamento = new Departamento();
+
+        $validateData = $request -> validate([
+            'departamento' => 'required|unique:departamentos'
+        ]);
+
+        if (!is_null($departamento)) {
+
+            $departamento -> departamento = $request -> departamento;
+            $departamento -> ubicacion = $request -> ubicacion;
+            $departamento -> save();
+
+            $response = array (
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Registro creado correctamente'
+           );
+        } else {
+            $response = array (
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Error: El registro no se creo correctamente'
+           );
+        }
+
+        return $response;
+        
     }
 
     /**
@@ -44,20 +60,23 @@ class DepartamentoController extends Controller
      * @param  \App\Models\Departamento  $departamento
      * @return \Illuminate\Http\Response
      */
-    public function show(Departamento $departamento)
+    public function show($id)
     {
-        //
-    }
+        $departamento = Departamento::with('usuarios')->find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Departamento  $departamento
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Departamento $departamento)
-    {
-        //
+        if ( $departamento ) {
+            return $departamento;
+        } else {
+            
+            $response = array (
+                'status' => 'error',
+                 'code' => 400,
+                 'message' => 'Error: No se encontro el registro'
+            );
+        }
+
+        return $response;
+        
     }
 
     /**
@@ -67,9 +86,24 @@ class DepartamentoController extends Controller
      * @param  \App\Models\Departamento  $departamento
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Departamento $departamento)
+    public function update(Request $request, $id)
     {
-        //
+        $departamento = new Departamento();
+        
+        $departamento = Departamento::where('id_departamento', $id)->update(
+            [
+                'departamento' => $request -> get('departamento'),
+                'ubicacion' => $request -> get('ubicacion')
+            ]
+        );
+
+        $response = array (
+            'status' => 'success',
+            'code' => 200,
+            'message' => 'Registro actualizado correctamente'
+       );
+
+       return $response;
     }
 
     /**
@@ -78,8 +112,25 @@ class DepartamentoController extends Controller
      * @param  \App\Models\Departamento  $departamento
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Departamento $departamento)
+    public function destroy($id)
     {
-        //
+        if ($id != null) {
+            $dpto = Departamento::find($id);
+            $dpto->delete();
+            
+            $response = array (
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Registro eliminado correctamente'
+           );
+        } else {
+            $response = array (
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'API: Error al eliminar registro'
+           );
+        }
+
+        return $response;
     }
 }
