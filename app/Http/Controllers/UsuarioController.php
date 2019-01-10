@@ -14,17 +14,7 @@ class UsuarioController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return Usuario::with('tickets')->with('departamento')->get();
     }
 
     /**
@@ -35,7 +25,35 @@ class UsuarioController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $usuario = new Usuario();
+
+        // $validateData = $request -> validate([
+        //     ''
+        // ]);
+
+        if (!is_null($usuario)) {
+            $usuario -> uid = $request -> uid;
+            $usuario -> departamento_id = $request -> departamento_id;
+            $usuario -> usuario = $request -> usuario;
+            $usuario -> email = $request -> email;
+            $usuario -> urlavatar = $request -> urlavatar;
+            $usuario -> save();
+
+            $response = array (
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Usuario creado correctamente.'
+            );
+
+        } else {
+            $response = array (
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Error al crear usuario.'
+            );
+        }
+        
+        return $response;
     }
 
     /**
@@ -44,20 +62,22 @@ class UsuarioController extends Controller
      * @param  \App\Models\Usuario  $usuario
      * @return \Illuminate\Http\Response
      */
-    public function show(Usuario $usuario)
+    public function show($id)
     {
-        //
-    }
+        $usuario = Usuario::with('tickets')->with('departamento')->find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Usuario  $usuario
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Usuario $usuario)
-    {
-        //
+        if ($usuario) {
+            return $usuario;
+        } else {
+            $response = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Usuario no encontrado.'
+            );
+        }
+
+        return $response;
+        
     }
 
     /**
@@ -67,9 +87,26 @@ class UsuarioController extends Controller
      * @param  \App\Models\Usuario  $usuario
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Usuario $usuario)
+    public function update(Request $request, $id)
     {
-        //
+        $usuario = new Usuario();
+
+        $usuario = Usuario::where('uid', $id)->update(
+            [
+                'departamento_id' => $request -> get('departamento_id'),
+                'usuario' => $request -> get('usuario'),
+                'email' => $request -> get('email'),
+                'urlavatar' => $request -> get('urlavatar')
+            ]
+        );
+
+        $response = array (
+            'status' => 'success',
+            'code' => 200,
+            'message' => 'Usuario actualizado correctamente.'
+        );
+
+        return $response;
     }
 
     /**
@@ -78,8 +115,24 @@ class UsuarioController extends Controller
      * @param  \App\Models\Usuario  $usuario
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Usuario $usuario)
+    public function destroy($id)
     {
-        //
+        if ($id != null) {
+            $usuario = Usuario::find($id);
+            $usuario->delete();
+
+            $response = array (
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Usuario eliminado correctamente.'
+            );
+        } else {
+            $response = array (
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Error al eliminar usuario.'
+            );
+        }
+        return $response;
     }
 }
