@@ -11,6 +11,7 @@ $factory->define(App\Models\Ticket::class, function (Faker $faker) {
         'servicio' => $faker -> catchPhrase,
         'descripcion' => $faker -> streetAddress,
         'diagnostico' => $faker -> address,
+        'tecnico' => $faker -> name,
         'status' => $faker -> word
     ];
 });
