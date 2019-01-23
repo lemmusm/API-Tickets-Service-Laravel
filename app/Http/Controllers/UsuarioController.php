@@ -27,33 +27,34 @@ class UsuarioController extends Controller
     {
         $usuario = new Usuario();
 
-        // $validateData = $request -> validate([
-        //     ''
-        // ]);
+        $validateData = $request -> validate([
+            'uid' => 'required|unique:usuarios'
+        ]);
 
         if (!is_null($usuario)) {
             $usuario -> uid = $request -> uid;
-            $usuario -> departamento_id = $request -> departamento_id;
-            $usuario -> usuario = $request -> usuario;
+            $usuario -> departamento_id = 2;
+            $usuario -> displayName = $request -> displayName;
             $usuario -> email = $request -> email;
-            $usuario -> urlavatar = $request -> urlavatar;
+            $usuario -> photoURL = $request -> photoURL;
             $usuario -> save();
 
-            $response = array (
-                'status' => 'success',
-                'code' => 200,
-                'message' => 'Usuario creado correctamente.'
-            );
+            // $response = array (
+            //     'status' => 'success',
+            //     'code' => 200,
+            //     'message' => 'Usuario creado correctamente.'
+            // );
 
-        } else {
-            $response = array (
-                'status' => 'error',
-                'code' => 400,
-                'message' => 'Error al crear usuario.'
-            );
-        }
+        } 
+        // else {
+        //     $response = array (
+        //         'status' => 'error',
+        //         'code' => 400,
+        //         'message' => 'Error al crear usuario.'
+        //     );
+        // }
         
-        return $response;
+        // return $response;
     }
 
     /**
@@ -94,9 +95,9 @@ class UsuarioController extends Controller
         $usuario = Usuario::where('uid', $id)->update(
             [
                 'departamento_id' => $request -> get('departamento_id'),
-                'usuario' => $request -> get('usuario'),
+                'displayName' => $request -> get('displayName'),
                 'email' => $request -> get('email'),
-                'urlavatar' => $request -> get('urlavatar')
+                'photoURL' => $request -> get('photoURL')
             ]
         );
 

@@ -9,8 +9,8 @@ $factory->define(App\Models\Usuario::class, function (Faker $faker) {
         'departamento_id' => function() {
             return Departamento::all()->random();
         },
-        'usuario' => $faker -> name,
+        'displayName' => $faker -> name,
         'email' => $faker -> email,
-        'urlavatar' => $faker -> url
+        'photoURL' => $faker -> url
     ];
 });

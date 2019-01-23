@@ -15,10 +15,10 @@ class CreateUsuariosTable extends Migration
     {
         Schema::create('usuarios', function (Blueprint $table) {
             $table->string('uid')->primary();
-            $table->integer('departamento_id')->unsigned();
-            $table->string('usuario', 50);
+            $table->integer('departamento_id')->unsigned()->nullable();
+            $table->string('displayName', 50);
             $table->string('email', 50);
-            $table->string('urlavatar');
+            $table->string('photoURL');
             $table->timestamps();
         });
     }
