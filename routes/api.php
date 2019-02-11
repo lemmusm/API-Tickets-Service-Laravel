@@ -19,3 +19,10 @@ use Illuminate\Http\Request;
     Route::resource('usuarios', 'usuarioController');
     // route resource para tickets
     Route::resource('tickets', 'TicketController');
+
+    // get data ticket filter for dashboard
+    Route::get('lastTickets/filtertickets', 'TicketController@filtertickets');
+    Route::get('graphs/gtickets', 'TicketController@gtickets');
+    Route::get('graphs/gservicios', 'TicketController@gservicios');
+    Route::get('graphs/gticketsareas', 'TicketController@gticketsareas');
+    Route::get('graphs/totaltickets', 'TicketController@totaltickets');

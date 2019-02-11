@@ -14,9 +14,21 @@ class TicketController extends Controller
      */
     public function index()
     {
-        return Ticket::with('usuario')
-        // ->join('usuarios', 'usuario_uid', '=', 'usuarios.uid' )
-        // ->join('departamentos', 'departamento_id', '=', 'departamentos.id_departamento' )
+        // return Ticket::with('usuario')
+        // // ->join('usuarios', 'usuario_uid', '=', 'usuarios.uid' )
+        // // ->join('departamentos', 'departamento_id', '=', 'departamentos.id_departamento' )
+        // ->get();
+
+        return Ticket::join('usuarios', 'usuario_uid', '=', 'usuarios.uid' )
+        ->join('departamentos', 'departamento_id', '=', 'departamentos.id_departamento' )
+        ->select(
+            'id_ticket',
+            'servicio',
+            'status',
+            'tickets.created_at as created_at',
+            'displayName',
+            'departamento')
+       ->orderBy('id_ticket', 'asc') 
         ->get();
     }
 
@@ -35,9 +47,9 @@ class TicketController extends Controller
             $ticket -> usuario_uid = $request -> usuario_uid;
             $ticket -> servicio = $request -> servicio;
             $ticket -> descripcion = $request -> descripcion;
-            $ticket -> diagnostico = $request -> diagnostico;
-            $ticket -> tecnico = $request -> tecnico;
-            $ticket -> status = $request -> status;
+            $ticket -> diagnostico = '';
+            $ticket -> tecnico = '';
+            $ticket -> status = 'Abierto';
             $ticket -> save();
 
             $response = array(
@@ -63,7 +75,24 @@ class TicketController extends Controller
      */
     public function show($id)
     {
-       $ticket = Ticket::with('usuario')->find($id);
+        // $ticket = Ticket::with('usuario')->find($id);
+       
+        $ticket = Ticket::join('usuarios', 'usuario_uid', '=', 'usuarios.uid' )
+        ->join('departamentos', 'departamento_id', '=', 'departamentos.id_departamento' )
+        ->select(
+            'id_ticket',
+            'servicio',
+            'descripcion',
+            'diagnostico',
+            'tecnico',
+            'status',
+            'tickets.created_at as created_at',
+            'tickets.updated_at as updated_at',
+            'uid',
+            'displayName',
+            'email',
+            'departamento')
+       ->find($id);
 
        if ($ticket) {
            return $ticket;
@@ -134,5 +163,51 @@ class TicketController extends Controller
            );
        }
        return $response;
+    }
+
+    public function filtertickets() {
+        return Ticket::join('usuarios', 'usuario_uid', '=', 'usuarios.uid' )
+        ->join('departamentos', 'departamento_id', '=', 'departamentos.id_departamento' )
+        ->select(
+            'id_ticket',
+            'servicio',
+            'status',
+            'tickets.created_at as created_at',
+            'displayName',
+            'departamento')
+       ->orderBy('id_ticket', 'desc')
+       ->take(15)
+        ->get();
+    }
+// Graphs
+    public function gtickets() {
+        return Ticket::selectRaw('status, COUNT(*) as count')
+        ->groupBy('status')
+        ->orderBy('count', 'desc')
+        ->get();
+    }
+
+    public function gticketsareas() {
+        return Ticket::join('usuarios', 'usuario_uid', '=', 'usuarios.uid' )
+        ->join('departamentos', 'departamento_id', '=', 'departamentos.id_departamento' )
+        ->select('departamento')
+        ->selectRaw('departamento, COUNT(*) as count')
+        ->groupBy('departamento')
+        ->orderBy('count', 'desc')
+        ->get();
+    }
+
+    public function gservicios() {
+        return Ticket::join('usuarios', 'usuario_uid', '=', 'usuarios.uid' )
+        ->join('departamentos', 'departamento_id', '=', 'departamentos.id_departamento' )
+        ->select('servicio')
+        ->selectRaw('servicio, COUNT(*) as count')
+        ->groupBy('servicio')
+        ->orderBy('count', 'desc')
+        ->get();
+    }
+
+    public function totaltickets() {
+        return Ticket::count();
     }
 }
