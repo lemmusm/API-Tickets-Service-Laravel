@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
     // route resource para departamentos
     Route::resource('departamentos', 'DepartamentoController');
     // route resource para usuarios
-    Route::resource('usuarios', 'usuarioController');
+    Route::resource('usuarios', 'UsuarioController');
     // route resource para tickets
     Route::resource('tickets', 'TicketController');
 
