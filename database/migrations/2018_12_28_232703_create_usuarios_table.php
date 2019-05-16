@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateUsuariosTable extends Migration
 {
@@ -19,6 +19,7 @@ class CreateUsuariosTable extends Migration
             $table->string('displayName', 50);
             $table->string('email', 50);
             $table->string('photoURL');
+            $table->integer('rol_id')->unsigned()->nullable();
             $table->timestamps();
         });
     }

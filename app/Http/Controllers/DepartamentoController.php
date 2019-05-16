@@ -14,7 +14,9 @@ class DepartamentoController extends Controller
      */
     public function index()
     {
-        return Departamento::with('usuarios')->get();
+        return Departamento::with('usuarios')
+            ->orderBy('departamento', 'desc')
+            ->get();
     }
 
     /**
@@ -27,31 +29,29 @@ class DepartamentoController extends Controller
     {
         $departamento = new Departamento();
 
-        $validateData = $request -> validate([
-            'departamento' => 'required|unique:departamentos'
+        $validateData = $request->validate([
+            'departamento' => 'required|unique:departamentos',
         ]);
 
         if (!is_null($departamento)) {
 
-            $departamento -> departamento = $request -> departamento;
-            $departamento -> ubicacion = $request -> ubicacion;
-            $departamento -> save();
+            $departamento->departamento = $request->departamento;
+            $departamento->ubicacion = $request->ubicacion;
+            $departamento->save();
 
-            $response = array (
+            $response = array(
                 'status' => 'success',
                 'code' => 200,
-                'message' => 'Registro creado correctamente'
-           );
+                'message' => 'Registro creado correctamente',
+            );
         } else {
-            $response = array (
+            $response = array(
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'Error: El registro no se creo correctamente'
-           );
+                'message' => 'Error: El registro no se creo correctamente',
+            );
         }
-
         return $response;
-        
     }
 
     /**
@@ -64,19 +64,16 @@ class DepartamentoController extends Controller
     {
         $departamento = Departamento::with('usuarios')->find($id);
 
-        if ( $departamento ) {
+        if ($departamento) {
             return $departamento;
         } else {
-            
-            $response = array (
+            $response = array(
                 'status' => 'error',
-                 'code' => 400,
-                 'message' => 'Error: No se encontro el registro'
+                'code' => 400,
+                'message' => 'Error: No se encontro el registro',
             );
         }
-
         return $response;
-        
     }
 
     /**
@@ -89,21 +86,21 @@ class DepartamentoController extends Controller
     public function update(Request $request, $id)
     {
         $departamento = new Departamento();
-        
+
         $departamento = Departamento::where('id_departamento', $id)->update(
             [
-                'departamento' => $request -> get('departamento'),
-                'ubicacion' => $request -> get('ubicacion')
+                'departamento' => $request->get('departamento'),
+                'ubicacion' => $request->get('ubicacion'),
             ]
         );
 
-        $response = array (
+        $response = array(
             'status' => 'success',
             'code' => 200,
-            'message' => 'Registro actualizado correctamente'
-       );
+            'message' => 'Registro actualizado correctamente',
+        );
 
-       return $response;
+        return $response;
     }
 
     /**
@@ -117,20 +114,19 @@ class DepartamentoController extends Controller
         if ($id != null) {
             $dpto = Departamento::find($id);
             $dpto->delete();
-            
-            $response = array (
+
+            $response = array(
                 'status' => 'success',
                 'code' => 200,
-                'message' => 'Registro eliminado correctamente'
-           );
+                'message' => 'Registro eliminado correctamente',
+            );
         } else {
-            $response = array (
+            $response = array(
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'API: Error al eliminar registro'
-           );
+                'message' => 'API: Error al eliminar registro',
+            );
         }
-
         return $response;
     }
 }

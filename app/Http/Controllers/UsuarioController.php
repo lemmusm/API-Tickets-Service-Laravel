@@ -27,25 +27,25 @@ class UsuarioController extends Controller
     {
         $usuario = new Usuario();
 
-        $validateData = $request -> validate([
-            'uid' => 'required|unique:usuarios'
+        $validateData = $request->validate([
+            'uid' => 'required|unique:usuarios',
         ]);
 
         if (!is_null($usuario)) {
-            $usuario -> uid = $request -> uid;
-            $usuario -> departamento_id = 2;
-            $usuario -> displayName = $request -> displayName;
-            $usuario -> email = $request -> email;
-            $usuario -> photoURL = $request -> photoURL;
-            $usuario -> save();
+            $usuario->uid = $request->uid;
+            $usuario->departamento_id = 2;
+            $usuario->displayName = $request->displayName;
+            $usuario->email = $request->email;
+            $usuario->photoURL = $request->photoURL;
+            $usuario->rol_id = 1;
+            $usuario->save();
 
             // $response = array (
             //     'status' => 'success',
             //     'code' => 200,
             //     'message' => 'Usuario creado correctamente.'
             // );
-
-        } 
+        }
         // else {
         //     $response = array (
         //         'status' => 'error',
@@ -53,7 +53,6 @@ class UsuarioController extends Controller
         //         'message' => 'Error al crear usuario.'
         //     );
         // }
-        
         // return $response;
     }
 
@@ -73,12 +72,10 @@ class UsuarioController extends Controller
             $response = array(
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'Usuario no encontrado.'
+                'message' => 'Usuario no encontrado.',
             );
         }
-
         return $response;
-        
     }
 
     /**
@@ -88,26 +85,48 @@ class UsuarioController extends Controller
      * @param  \App\Models\Usuario  $usuario
      * @return \Illuminate\Http\Response
      */
+// Actualiza los campos mencionados de la tabla usuarios
     public function update(Request $request, $id)
     {
         $usuario = new Usuario();
 
         $usuario = Usuario::where('uid', $id)->update(
             [
-                'departamento_id' => $request -> get('departamento_id'),
-                'displayName' => $request -> get('displayName'),
-                'email' => $request -> get('email'),
-                'photoURL' => $request -> get('photoURL')
+                'departamento_id' => $request->get('departamento_id'),
+                'displayName' => $request->get('displayName'),
+                'email' => $request->get('email'),
+                'photoURL' => $request->get('photoURL'),
+                'rol_id' => $request->get('rol_id'),
             ]
         );
 
-        $response = array (
+        $response = array(
             'status' => 'success',
             'code' => 200,
-            'message' => 'Usuario actualizado correctamente.'
+            'message' => 'Usuario actualizado correctamente.',
+        );
+        return $response;
+    }
+// Actualiza el nombre en caso de que se haya modificado en Firebase
+    public function updateDisplayName(Request $request, $id)
+    {
+
+        $usuario = new Usuario();
+
+        $usuario = Usuario::where('uid', $id)->update(
+            [
+                'displayName' => $request->get('displayName'),
+                'photoURL' => $request->get('photoURL'),
+            ]
         );
 
-        return $response;
+        // $response = array(
+        //     'status' => 'success',
+        //     'code' => 200,
+        //     'message' => 'Nombre y photoURL actulizados correctamente.',
+        // );
+
+        // return $response;
     }
 
     /**
@@ -122,16 +141,16 @@ class UsuarioController extends Controller
             $usuario = Usuario::find($id);
             $usuario->delete();
 
-            $response = array (
+            $response = array(
                 'status' => 'success',
                 'code' => 200,
-                'message' => 'Usuario eliminado correctamente.'
+                'message' => 'Usuario eliminado correctamente.',
             );
         } else {
-            $response = array (
+            $response = array(
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'Error al eliminar usuario.'
+                'message' => 'Error al eliminar usuario.',
             );
         }
         return $response;
