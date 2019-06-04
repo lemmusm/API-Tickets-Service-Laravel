@@ -14,7 +14,55 @@ class UsuarioController extends Controller
      */
     public function index()
     {
-        return Usuario::with('tickets')->with('departamento')->get();
+        // return Usuario::with('tickets')->with('departamento')->with('rol')->get();
+        return Usuario::select(
+            'uid',
+            'displayName',
+            'email',
+            'departamento_id'
+        )
+        ->with(['departamento' => function ($query) {
+                $query->select(['id_departamento', 'departamento']);
+            }])
+        ->get();
+    }
+
+    // Filtrado de user data por id
+    public function getFilterUserData($id) {
+        $usuario = Usuario::select(
+            'uid',
+            'displayName',
+            'email',
+            'photoURL',
+            'departamento_id',
+            'rol_id')
+        ->with(['departamento' => function ($query) {
+                $query->select(['id_departamento', 'departamento']);
+            },
+            'rol' => function ($query) {
+                $query->select(['id_rol', 'rol']);
+            },
+            'tickets' => function ($query) {
+                $query->select(['id_ticket',
+                'usuario_uid',
+                'servicio',
+                'descripcion',
+                'status',
+                'created_at']);
+            }])
+        ->find($id);
+
+
+        if ($usuario) {
+            return $usuario;
+        } else {
+            $response = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Usuario no encontrado.',
+            );
+        }
+        return $response;
     }
 
     /**
@@ -37,7 +85,7 @@ class UsuarioController extends Controller
             $usuario->displayName = $request->displayName;
             $usuario->email = $request->email;
             $usuario->photoURL = $request->photoURL;
-            $usuario->rol_id = 1;
+            $usuario->rol_id = 2;
             $usuario->save();
 
             // $response = array (

@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
+use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Model;
 
 class Roles extends Model
@@ -13,8 +14,8 @@ class Roles extends Model
     // Si éste no fuera el caso entonces hay que indicar cuál es nuestra clave primaria en la tabla:
     protected $primaryKey = 'id_rol';
 
-    // public function usuario()
-    // {
-    //     return $this->belongsTo(Usuario::class, 'usuario_uid', 'uid');
-    // }
+    public function usuarios()
+    {
+        return $this->hasMany(Usuario::class, 'rol_id', 'id_rol');
+    }
 }

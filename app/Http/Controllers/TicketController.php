@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 class TicketController extends Controller
 {
@@ -29,6 +31,7 @@ class TicketController extends Controller
                 'tickets.created_at as created_at',
                 'displayName',
                 'departamento')
+            // ->paginate(5)
             ->orderBy('id_ticket', 'asc')
             ->get();
     }
@@ -76,8 +79,6 @@ class TicketController extends Controller
      */
     public function show($id)
     {
-        // $ticket = Ticket::with('usuario')->find($id);
-
         $ticket = Ticket::join('usuarios', 'usuario_uid', '=', 'usuarios.uid')
             ->join('departamentos', 'departamento_id', '=', 'departamentos.id_departamento')
             ->select(
@@ -95,6 +96,23 @@ class TicketController extends Controller
                 'departamento')
             ->find($id);
 
+        // $ticket = Ticket::select(
+        //     'id_ticket',
+        //     'servicio',
+        //     'descripcion',
+        //     'diagnostico',
+        //     'filesattach',
+        //     'tecnico',
+        //     'status',
+        //     'created_at',
+        //     'updated_at',
+        //     'usuario_uid')
+        // ->with(['usuario' => function ($query) {
+        //         $query->select(['uid', 'displayName', 'email', 'departamento_id']);
+        //     }])
+        // ->load('uid.departamento')
+        // ->find($id);
+
         if ($ticket) {
             return $ticket;
         } else {
@@ -103,9 +121,8 @@ class TicketController extends Controller
                 'code' => 400,
                 'message' => 'Registro no encontrado.',
             );
+            return $response;
         }
-
-        return $response;
 
     }
 
@@ -182,35 +199,43 @@ class TicketController extends Controller
             ->get();
     }
 // Graphs
-    public function gtickets()
-    {
-        return Ticket::selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->orderBy('count', 'desc')
-            ->get();
-    }
-
-    public function gticketsareas()
-    {
+    public function statistics(Request $request) {
+        $parametro = $request->get('parametro');
         return Ticket::join('usuarios', 'usuario_uid', '=', 'usuarios.uid')
             ->join('departamentos', 'departamento_id', '=', 'departamentos.id_departamento')
-            ->select('departamento')
-            ->selectRaw('departamento, COUNT(*) as count')
-            ->groupBy('departamento')
-            ->orderBy('count', 'desc')
+            ->select("$parametro as parametro", DB::raw('COUNT(*) as count'))
+            ->groupBy($parametro)
             ->get();
     }
+    // public function gtickets()
+    // {
+    //     return Ticket::selectRaw('status, COUNT(*) as count')
+    //         ->groupBy('status')
+    //         ->orderBy('count', 'desc')
+    //         ->get();
+    // }
 
-    public function gservicios()
-    {
-        return Ticket::join('usuarios', 'usuario_uid', '=', 'usuarios.uid')
-            ->join('departamentos', 'departamento_id', '=', 'departamentos.id_departamento')
-            ->select('servicio')
-            ->selectRaw('servicio, COUNT(*) as count')
-            ->groupBy('servicio')
-            ->orderBy('count', 'desc')
-            ->get();
-    }
+    // public function gticketsareas()
+    // {
+    //     return Ticket::join('usuarios', 'usuario_uid', '=', 'usuarios.uid')
+    //         ->join('departamentos', 'departamento_id', '=', 'departamentos.id_departamento')
+    //         ->select('departamento')
+    //         ->selectRaw('departamento, COUNT(*) as count')
+    //         ->groupBy('departamento')
+    //         ->orderBy('count', 'desc')
+    //         ->get();
+    // }
+
+    // public function gservicios()
+    // {
+    //     return Ticket::join('usuarios', 'usuario_uid', '=', 'usuarios.uid')
+    //         ->join('departamentos', 'departamento_id', '=', 'departamentos.id_departamento')
+    //         ->select('servicio')
+    //         ->selectRaw('servicio, COUNT(*) as count')
+    //         ->groupBy('servicio')
+    //         ->orderBy('count', 'desc')
+    //         ->get();
+    // }
 
     public function totaltickets()
     {

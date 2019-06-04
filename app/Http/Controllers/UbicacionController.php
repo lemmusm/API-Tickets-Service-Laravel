@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use  App\Models\Roles;
+use App\Ubicacion;
 use Illuminate\Http\Request;
 
-class RolesController extends Controller
+class UbicacionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,17 +14,17 @@ class RolesController extends Controller
      */
     public function index()
     {
-        return Roles::with('usuarios')->get();
+        //
     }
 
-    public function filterrol()
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
     {
-        return Roles::select(
-            'id_rol',
-            'rol'
-        )
-        ->get();
-
+        //
     }
 
     /**
@@ -41,10 +41,21 @@ class RolesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Roles  $roles
+     * @param  \App\ubicaciones  $ubicaciones
      * @return \Illuminate\Http\Response
      */
-    public function show(Roles $roles)
+    public function show(ubicaciones $ubicaciones)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\ubicaciones  $ubicaciones
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(ubicaciones $ubicaciones)
     {
         //
     }
@@ -53,21 +64,21 @@ class RolesController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Roles  $roles
+     * @param  \App\ubicaciones  $ubicaciones
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Roles $roles)
+    public function update(Request $request, ubicaciones $ubicaciones)
     {
-        return Roles::get();
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Roles  $roles
+     * @param  \App\ubicaciones  $ubicaciones
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Roles $roles)
+    public function destroy(ubicaciones $ubicaciones)
     {
         //
     }

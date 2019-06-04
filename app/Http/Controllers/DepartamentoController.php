@@ -14,9 +14,19 @@ class DepartamentoController extends Controller
      */
     public function index()
     {
-        return Departamento::with('usuarios')
-            ->orderBy('departamento', 'desc')
-            ->get();
+        // return Departamento::with('usuarios')
+            // ->orderBy('departamento', 'desc')
+            // ->get();
+
+        return Departamento::select(
+            'id_departamento',
+            'departamento',
+            'ubicacion',
+        )
+        ->with(['usuarios' => function ($query) {
+                $query->select(['departamento_id']);
+            }])
+        ->get();
     }
 
     /**
