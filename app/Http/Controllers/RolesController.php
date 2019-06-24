@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use  App\Models\Roles;
+use App\Models\Roles;
 use Illuminate\Http\Request;
 
 class RolesController extends Controller
@@ -14,19 +14,12 @@ class RolesController extends Controller
      */
     public function index()
     {
-        return Roles::with('usuarios')->get();
-    }
-
-    public function filterrol()
-    {
         return Roles::select(
             'id_rol',
             'rol'
         )
-        ->get();
-
+            ->get();
     }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -35,40 +28,102 @@ class RolesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rol = new Roles();
+
+        if (!is_null($rol)) {
+            $rol->rol = $request->rol;
+            $rol->save();
+
+            $response = array(
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Registro creado correctamente',
+            );
+        } else {
+            $response = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Error: El registro no se creo correctamente',
+            );
+        }
+        return $response;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Roles  $roles
+     * @param  \App\roles  $roles
      * @return \Illuminate\Http\Response
      */
-    public function show(Roles $roles)
+    public function show($id)
     {
-        //
+        $rol = Roles::select(
+            'id_rol',
+            'rol')
+            ->find($id);
+
+        if ($rol) {
+            return $rol;
+        } else {
+            $response = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Error: No se encontro el registro',
+            );
+            return $response;
+        }
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Roles  $roles
+     * @param  \App\roles  $roles
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Roles $roles)
+    public function update(Request $request, $id)
     {
-        return Roles::get();
+        $rol = new Roles();
+
+        $rol = Roles::where('id_rol', $id)->update(
+            [
+                'rol' => $request->get('rol'),
+            ]
+        );
+
+        $response = array(
+            'status' => 'success',
+            'code' => 200,
+            'message' => 'Registro actualizado correctamente',
+        );
+
+        return $response;
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Roles  $roles
+     * @param  \App\roles  $roles
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Roles $roles)
+    public function destroy($id)
     {
-        //
+        if ($id != null) {
+            $rol = Roles::find($id);
+            $rol->delete();
+
+            $response = array(
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Registro eliminado correctamente',
+            );
+        } else {
+            $response = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'API: Error al eliminar registro',
+            );
+        }
+        return $response;
     }
 }

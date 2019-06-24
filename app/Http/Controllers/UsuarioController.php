@@ -14,57 +14,35 @@ class UsuarioController extends Controller
      */
     public function index()
     {
-        // return Usuario::with('tickets')->with('departamento')->with('rol')->get();
         return Usuario::select(
             'uid',
             'displayName',
             'email',
             'departamento_id'
         )
-        ->with(['departamento' => function ($query) {
-                $query->select(['id_departamento', 'departamento']);
-            }])
-        ->get();
+            ->with([
+                'departamento' => function ($query) {
+                    $query->select(['id_departamento', 'departamento']);
+                },
+            ])
+            ->get();
+        // ->with([
+        //     'departamento' => function ($query) {
+        //         $query->select(['id_departamento', 'departamento']);
+        //     },
+        //     'tickets' => function ($query) {
+        //         $query->select(['id_ticket',
+        //         'usuario_uid',
+        //         'servicio_id',
+        //         'descripcion',
+        //         'status',
+        //         'created_at']);
+        //     },
+        //     'tickets.servicio' => function ($query) {
+        //         $query->select(['id_servicio', 'servicio']);
+        //     }])
+        // ->get();
     }
-
-    // Filtrado de user data por id
-    public function getFilterUserData($id) {
-        $usuario = Usuario::select(
-            'uid',
-            'displayName',
-            'email',
-            'photoURL',
-            'departamento_id',
-            'rol_id')
-        ->with(['departamento' => function ($query) {
-                $query->select(['id_departamento', 'departamento']);
-            },
-            'rol' => function ($query) {
-                $query->select(['id_rol', 'rol']);
-            },
-            'tickets' => function ($query) {
-                $query->select(['id_ticket',
-                'usuario_uid',
-                'servicio',
-                'descripcion',
-                'status',
-                'created_at']);
-            }])
-        ->find($id);
-
-
-        if ($usuario) {
-            return $usuario;
-        } else {
-            $response = array(
-                'status' => 'error',
-                'code' => 400,
-                'message' => 'Usuario no encontrado.',
-            );
-        }
-        return $response;
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -110,9 +88,71 @@ class UsuarioController extends Controller
      * @param  \App\Models\Usuario  $usuario
      * @return \Illuminate\Http\Response
      */
+    // Usuario filtrado
     public function show($id)
     {
-        $usuario = Usuario::with('tickets')->with('departamento')->find($id);
+        $usuario = Usuario::select(
+            'uid',
+            'displayName',
+            'email',
+            'photoURL',
+            'departamento_id',
+            'rol_id')
+            ->with([
+                'departamento' => function ($query) {
+                    $query->select(['id_departamento', 'departamento']);
+                },
+                'rol' => function ($query) {
+                    $query->select(['id_rol', 'rol']);
+                },
+            ])
+            ->find($id);
+
+        if ($usuario) {
+            return $usuario;
+        } else {
+            $response = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Usuario no encontrado.',
+            );
+            return $response;
+        }
+    }
+    // Usuario completo
+
+    // Filtrado de user data por id
+    public function getCompleteUser($id)
+    {
+        $usuario = Usuario::select(
+            'uid',
+            'displayName',
+            'email',
+            'photoURL',
+            'departamento_id',
+            'rol_id')
+            ->with([
+                'departamento' => function ($query) {
+                    $query->select([
+                        'id_departamento',
+                        'departamento']);
+                },
+                'rol' => function ($query) {
+                    $query->select(['id_rol', 'rol']);
+                },
+                'tickets' => function ($query) {
+                    $query->select([
+                        'id_ticket',
+                        'usuario_uid',
+                        'servicio_id',
+                        'descripcion',
+                        'status',
+                        'created_at']);
+                },
+                'tickets.servicio' => function ($query) {
+                    $query->select(['id_servicio', 'servicio']);
+                }])
+            ->find($id);
 
         if ($usuario) {
             return $usuario;
@@ -125,7 +165,6 @@ class UsuarioController extends Controller
         }
         return $response;
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -133,50 +172,51 @@ class UsuarioController extends Controller
      * @param  \App\Models\Usuario  $usuario
      * @return \Illuminate\Http\Response
      */
-// Actualiza los campos mencionados de la tabla usuarios
+/*
+Actualiza los campos mencionados de la tabla usuarios,
+si el campo departamento tiene valor actualiza solo nombre y photourl,
+de lo contrario actualiza toso el usuario
+ */
     public function update(Request $request, $id)
     {
         $usuario = new Usuario();
 
-        $usuario = Usuario::where('uid', $id)->update(
-            [
-                'departamento_id' => $request->get('departamento_id'),
-                'displayName' => $request->get('displayName'),
-                'email' => $request->get('email'),
-                'photoURL' => $request->get('photoURL'),
-                'rol_id' => $request->get('rol_id'),
-            ]
-        );
-
-        $response = array(
-            'status' => 'success',
-            'code' => 200,
-            'message' => 'Usuario actualizado correctamente.',
-        );
+        switch ('departamento_id') {
+            case '!= null':
+                $usuario = Usuario::where('uid', $id)->update(
+                    [
+                        'displayName' => $request->get('displayName'),
+                        'photoURL' => $request->get('photoURL'),
+                    ]
+                );
+                break;
+            // case '!= null':
+            // $usuario = Usuario::where('uid', $id)->update(
+            //     [
+            //         'displayName' => $request->get('displayName'),
+            //         'photoURL' => $request->get('photoURL'),
+            //     ]
+            // );
+            // break;
+            default:
+                $usuario = Usuario::where('uid', $id)->update(
+                    [
+                        'departamento_id' => $request->get('departamento_id'),
+                        'displayName' => $request->get('displayName'),
+                        'email' => $request->get('email'),
+                        'photoURL' => $request->get('photoURL'),
+                        'rol_id' => $request->get('rol_id'),
+                    ]
+                );
+                $response = array(
+                    'status' => 'success',
+                    'code' => 200,
+                    'message' => 'Usuario actualizado correctamente.',
+                );
+                break;
+        }
         return $response;
     }
-// Actualiza el nombre en caso de que se haya modificado en Firebase
-    public function updateDisplayName(Request $request, $id)
-    {
-
-        $usuario = new Usuario();
-
-        $usuario = Usuario::where('uid', $id)->update(
-            [
-                'displayName' => $request->get('displayName'),
-                'photoURL' => $request->get('photoURL'),
-            ]
-        );
-
-        // $response = array(
-        //     'status' => 'success',
-        //     'code' => 200,
-        //     'message' => 'Nombre y photoURL actulizados correctamente.',
-        // );
-
-        // return $response;
-    }
-
     /**
      * Remove the specified resource from storage.
      *

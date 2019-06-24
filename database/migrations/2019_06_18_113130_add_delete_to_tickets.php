@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class FkTickets extends Migration
+class AddDeleteToTickets extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,7 @@ class FkTickets extends Migration
     public function up()
     {
         Schema::table('tickets', function (Blueprint $table) {
-            $table->foreign('usuario_uid')->references('uid')->on('usuarios')->onDelete('cascade');
-            $table->foreign('servicio_id')->references('id_servicio')->on('servicios')->onDelete('cascade');
+            $table->softDeletes();
         });
     }
 

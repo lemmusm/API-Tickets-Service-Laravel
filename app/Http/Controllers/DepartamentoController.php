@@ -14,19 +14,30 @@ class DepartamentoController extends Controller
      */
     public function index()
     {
-        // return Departamento::with('usuarios')
-            // ->orderBy('departamento', 'desc')
-            // ->get();
-
         return Departamento::select(
             'id_departamento',
             'departamento',
-            'ubicacion',
+            'ubicacion_id'
         )
-        ->with(['usuarios' => function ($query) {
-                $query->select(['departamento_id']);
-            }])
-        ->get();
+            ->get();
+    }
+
+    public function getCompleteDepartamentos()
+    {
+        return Departamento::select(
+            'id_departamento',
+            'departamento',
+            'ubicacion_id'
+        )
+            ->with(
+                [
+                    'usuarios' => function ($query) {
+                        $query->select(['departamento_id']);
+                    },
+                    'ubicacion' => function ($query) {
+                        $query->select(['id_ubicacion', 'ubicacion']);
+                    }])
+            ->get();
     }
 
     /**
@@ -46,7 +57,7 @@ class DepartamentoController extends Controller
         if (!is_null($departamento)) {
 
             $departamento->departamento = $request->departamento;
-            $departamento->ubicacion = $request->ubicacion;
+            $departamento->ubicacion_id = $request->ubicacion_id;
             $departamento->save();
 
             $response = array(
@@ -72,7 +83,18 @@ class DepartamentoController extends Controller
      */
     public function show($id)
     {
-        $departamento = Departamento::with('usuarios')->find($id);
+        $departamento = Departamento::select(
+            'id_departamento',
+            'departamento',
+            'ubicacion_id')
+            ->with(['ubicacion' => function ($query) {
+                $query->select(['id_ubicacion', 'ubicacion']);
+            },
+                'usuarios' => function ($query) {
+                    $query->select(['departamento_id', 'displayName', 'email']);
+                },
+            ])
+            ->find($id);
 
         if ($departamento) {
             return $departamento;
@@ -82,8 +104,8 @@ class DepartamentoController extends Controller
                 'code' => 400,
                 'message' => 'Error: No se encontro el registro',
             );
+            return $response;
         }
-        return $response;
     }
 
     /**
@@ -100,7 +122,7 @@ class DepartamentoController extends Controller
         $departamento = Departamento::where('id_departamento', $id)->update(
             [
                 'departamento' => $request->get('departamento'),
-                'ubicacion' => $request->get('ubicacion'),
+                'ubicacion_id' => $request->get('ubicacion_id'),
             ]
         );
 

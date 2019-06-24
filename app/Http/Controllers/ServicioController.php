@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Servicio;
+use App\Models\Servicio;
 use Illuminate\Http\Request;
 
 class ServicioController extends Controller
@@ -14,19 +14,12 @@ class ServicioController extends Controller
      */
     public function index()
     {
-        //
+        return Servicio::select(
+            'id_servicio',
+            'servicio'
+        )
+            ->get();
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -35,7 +28,25 @@ class ServicioController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $servicio = new Servicio();
+
+        if (!is_null($servicio)) {
+            $servicio->servicio = $request->servicio;
+            $servicio->save();
+
+            $response = array(
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Registro creado correctamente',
+            );
+        } else {
+            $response = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Error: El registro no se creo correctamente',
+            );
+        }
+        return $response;
     }
 
     /**
@@ -44,20 +55,23 @@ class ServicioController extends Controller
      * @param  \App\servicios  $servicios
      * @return \Illuminate\Http\Response
      */
-    public function show(servicios $servicios)
+    public function show($id)
     {
-        //
-    }
+        $servicio = Servicio::select(
+            'id_servicio',
+            'servicio')
+            ->find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\servicios  $servicios
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(servicios $servicios)
-    {
-        //
+        if ($servicio) {
+            return $servicio;
+        } else {
+            $response = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Error: No se encontro el registro',
+            );
+            return $response;
+        }
     }
 
     /**
@@ -67,9 +81,23 @@ class ServicioController extends Controller
      * @param  \App\servicios  $servicios
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, servicios $servicios)
+    public function update(Request $request, $id)
     {
-        //
+        $servicio = new Servicio();
+
+        $servicio = Servicio::where('id_servicio', $id)->update(
+            [
+                'servicio' => $request->get('servicio'),
+            ]
+        );
+
+        $response = array(
+            'status' => 'success',
+            'code' => 200,
+            'message' => 'Registro actualizado correctamente',
+        );
+
+        return $response;
     }
 
     /**
@@ -78,8 +106,24 @@ class ServicioController extends Controller
      * @param  \App\servicios  $servicios
      * @return \Illuminate\Http\Response
      */
-    public function destroy(servicios $servicios)
+    public function destroy($id)
     {
-        //
+        if ($id != null) {
+            $servicio = Servicio::find($id);
+            $servicio->delete();
+
+            $response = array(
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Registro eliminado correctamente',
+            );
+        } else {
+            $response = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'API: Error al eliminar registro',
+            );
+        }
+        return $response;
     }
 }
