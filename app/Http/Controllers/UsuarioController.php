@@ -54,16 +54,16 @@ class UsuarioController extends Controller
         $usuario = new Usuario();
 
         $validateData = $request->validate([
-            'uid' => 'required|unique:usuarios',
+            'uid' => 'required|unique:usuarios'
         ]);
 
         if (!is_null($usuario)) {
             $usuario->uid = $request->uid;
-            $usuario->departamento_id = 2;
+            $usuario->departamento_id = $request->departamento_id;
             $usuario->displayName = $request->displayName;
             $usuario->email = $request->email;
             $usuario->photoURL = $request->photoURL;
-            $usuario->rol_id = 2;
+            $usuario->rol_id = $request->rol_id;
             $usuario->save();
 
             // $response = array (
@@ -72,14 +72,14 @@ class UsuarioController extends Controller
             //     'message' => 'Usuario creado correctamente.'
             // );
         }
-        // else {
-        //     $response = array (
-        //         'status' => 'error',
-        //         'code' => 400,
-        //         'message' => 'Error al crear usuario.'
-        //     );
-        // }
-        // return $response;
+        else {
+            $response = array (
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Error al crear usuario.'
+            );
+        }
+        return $response;
     }
 
     /**
@@ -180,41 +180,21 @@ de lo contrario actualiza toso el usuario
     public function update(Request $request, $id)
     {
         $usuario = new Usuario();
-
-        switch ('departamento_id') {
-            case '!= null':
-                $usuario = Usuario::where('uid', $id)->update(
-                    [
-                        'displayName' => $request->get('displayName'),
-                        'photoURL' => $request->get('photoURL'),
-                    ]
-                );
-                break;
-            // case '!= null':
-            // $usuario = Usuario::where('uid', $id)->update(
-            //     [
-            //         'displayName' => $request->get('displayName'),
-            //         'photoURL' => $request->get('photoURL'),
-            //     ]
-            // );
-            // break;
-            default:
-                $usuario = Usuario::where('uid', $id)->update(
-                    [
-                        'departamento_id' => $request->get('departamento_id'),
-                        'displayName' => $request->get('displayName'),
-                        'email' => $request->get('email'),
-                        'photoURL' => $request->get('photoURL'),
-                        'rol_id' => $request->get('rol_id'),
-                    ]
-                );
-                $response = array(
-                    'status' => 'success',
-                    'code' => 200,
-                    'message' => 'Usuario actualizado correctamente.',
-                );
-                break;
-        }
+        $usuario = Usuario::where('uid', $id);
+        $usuario->update(
+            [
+                'displayName' => $request->get('displayName'),
+                'email' => $request->get('email'),
+                'photoURL' => $request->get('photoURL'),
+                'departamento_id' => $request->get('departamento_id'),
+                'rol_id' => $request->get('rol_id')
+            ]
+        );
+        $response = array(
+            'status' => 'success',
+            'code' => 200,
+            'message' => 'Usuario actualizado correctamente',
+        );
         return $response;
     }
     /**

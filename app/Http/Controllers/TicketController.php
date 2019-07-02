@@ -48,6 +48,7 @@ class TicketController extends Controller
             $ticket->descripcion = $request->descripcion;
             $ticket->diagnostico = 'Pendiente...';
             $ticket->tecnico = '';
+            $ticket->filesattach = $request->filesattach;
             $ticket->status = 'Abierto';
             $ticket->save();
 
