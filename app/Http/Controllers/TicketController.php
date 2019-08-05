@@ -31,6 +31,16 @@ class TicketController extends Controller
             ->get();
     }
 
+    public function storeFile(Request $request)
+    {
+        $File = $request->file('file');
+        $real_name = $File->getClientOriginalName();
+
+        // $destination_path = public_path('uploads');;
+        $destination_path = '/home/u89588/domains/uppenjamo.edu.mx/public_html/sistemas/uploads/';
+        $File->move($destination_path, $real_name);
+        return response()->json('📂');
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -85,6 +95,7 @@ class TicketController extends Controller
                 'descripcion',
                 'diagnostico',
                 'tecnico',
+                'filesattach',
                 'status',
                 'tickets.created_at as created_at',
                 'tickets.updated_at as updated_at',

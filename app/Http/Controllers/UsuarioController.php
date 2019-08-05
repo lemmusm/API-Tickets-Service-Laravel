@@ -54,7 +54,7 @@ class UsuarioController extends Controller
         $usuario = new Usuario();
 
         $validateData = $request->validate([
-            'uid' => 'required|unique:usuarios'
+            'uid' => 'required|unique:usuarios',
         ]);
 
         if (!is_null($usuario)) {
@@ -66,17 +66,16 @@ class UsuarioController extends Controller
             $usuario->rol_id = $request->rol_id;
             $usuario->save();
 
-            // $response = array (
-            //     'status' => 'success',
-            //     'code' => 200,
-            //     'message' => 'Usuario creado correctamente.'
-            // );
-        }
-        else {
-            $response = array (
+            $response = array(
+                'status' => 'success',
+                'code' => 200,
+                'message' => '::saved_user::💾',
+            );
+        } else {
+            $response = array(
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'Error al crear usuario.'
+                'message' => '::error_saving_user::💥',
             );
         }
         return $response;
@@ -187,7 +186,7 @@ de lo contrario actualiza toso el usuario
                 'email' => $request->get('email'),
                 'photoURL' => $request->get('photoURL'),
                 'departamento_id' => $request->get('departamento_id'),
-                'rol_id' => $request->get('rol_id')
+                'rol_id' => $request->get('rol_id'),
             ]
         );
         $response = array(

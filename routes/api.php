@@ -31,6 +31,8 @@ Route::get('estadisticas/infoTickets', 'TicketController@infoTickets');
 Route::get('estadisticas/totaltickets', 'TicketController@totaltickets');
 // Get data from range date cutrimestres
 Route::get('estadisticas/indicadores', 'TicketController@indicadores');
+// FILE
+Route::post('ticket/file', 'TicketController@storeFile');
 // ROLES
 // Get data from roles
 Route::resource('roles', 'RolesController');
