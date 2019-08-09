@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class TicketController extends Controller
 {
@@ -30,16 +31,29 @@ class TicketController extends Controller
         // ->orderBy('id_ticket', 'asc')
             ->get();
     }
-
+    // Se almacena el archivo, antes comprueba si existe.
     public function storeFile(Request $request)
     {
         $File = $request->file('file');
         $real_name = $File->getClientOriginalName();
-
-        // $destination_path = public_path('uploads');;
         $destination_path = '/home/u89588/domains/uppenjamo.edu.mx/public_html/sistemas/uploads/';
-        $File->move($destination_path, $real_name);
-        return response()->json('📂');
+        if (file_exists($destination_path . $real_name)) {
+            $response = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Archivo seleccionado duplicado!',
+            );
+        } else {
+
+            // $destination_path = public_path('uploads');;
+            $File->move($destination_path, $real_name);
+            $response = array(
+                'status' => 'success',
+                'code' => 200,
+                'message' => '📂',
+            );
+        }
+        return $response;
     }
     /**
      * Store a newly created resource in storage.
