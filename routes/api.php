@@ -42,3 +42,5 @@ Route::resource('ubicaciones', 'UbicacionController');
 //SERVICIOS
 // route resource para tickets
 Route::resource('servicios', 'ServicioController');
+//VersionSystems
+Route::resource('versystem', 'VersystemController');
